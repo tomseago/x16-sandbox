@@ -1,7 +1,7 @@
 
-!to "acmehello.prg", cbm
+; !to "acmehello.prg", cbm
 
-chrout = $ffd2
+!address chrout = $ffd2
 
     * = $9000
 

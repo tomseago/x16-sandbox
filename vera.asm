@@ -75,7 +75,10 @@ veraInit:
 veraPutChar:
     pha
 
+    ; Debug ---------
     pha
+    lda #$0a
+    sta EMU_debug_c
     lda #$5b
     sta EMU_debug_c
     pla
@@ -87,9 +90,14 @@ veraPutChar:
     sta EMU_debug_1
     lda #$5d
     sta EMU_debug_c
+    lda #$0a
+    sta EMU_debug_c
+    ; ---------- End Debug
+
 
     jsr .setPosAddr
     pla
+
 
     sta VERA_D0 ; output char to vera
 
@@ -111,17 +119,46 @@ veraPutChar:
     lda #VERA_CBUF_H
     sta VERA_H
 
+    ; Load X into low
+    lda scnCharX
+    asl
+    adc VERA_L
+    sta VERA_L
+
+    ; Load Y into med
+    lda scnCharY
+    adc VERA_M
+    sta VERA_M
+
+    sta EMU_debug_2
+    lda VERA_L
+    sta EMU_debug_2
+
+    rts
+
+.setPosAddrOld:
+    ; TODO: Rewrite this to store a current address and then use vera incrementing
+    ; instead of 6502 adds even. But maybe not, because can increment M address
+
+    ; Always start at the base address
+    lda #0
+    sta VERA_L
+    lda #VERA_CBUF_M
+    sta VERA_M
+    lda #VERA_CBUF_H
+    sta VERA_H
+
     ; First we offset for number of full rows
-;    lda scnCharY
-;    beq +
-;-
-;    lda #numCols
-;    jsr veraIncAddr
-;    lda #numCols
-;    jsr veraIncAddr  ; Do it twice because 2 bytes per char
-;    dey
-;    bne -
-;+
+    lda scnCharY
+    beq +
+-
+    lda #numCols
+    jsr veraIncAddr
+    lda #numCols
+    jsr veraIncAddr  ; Do it twice because 2 bytes per char
+    dey
+    bne -
++
 
     ; Now the x for number of used columns
     lda scnCharX

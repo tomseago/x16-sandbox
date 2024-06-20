@@ -100,6 +100,8 @@
 .handle_a:
     lda #5
     sta scnCharX
+    lda #0
+    sta scnCharY
     lda #1
     jsr veraPutChar
     rts
@@ -108,12 +110,16 @@
     lda #15
     sta scnCharX
     lda #2
+    sta scnCharY
+    lda #2
     jsr veraPutChar
     rts
 
 .handle_d:
     lda #20
     sta scnCharX
+    lda #1
+    sta scnCharY
     lda #3
     jsr veraPutChar
     rts

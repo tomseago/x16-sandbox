@@ -1,9 +1,9 @@
 ; Globals, particularly zero page addresses
 
 !address zPage = $30
-    scnCharX = zPage + $00
-    scnCharY = zPage + $01
-    scnColor = zPage + $02
+    !address scnCharX = zPage + $00
+    !address scnCharY = zPage + $01
+    !address scnColor = zPage + $02
 
 
 

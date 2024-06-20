@@ -50,16 +50,21 @@
     bne +
     rts
 +
-    ;sta EMU_debug_1
-
+    sta EMU_debug_1
     cmp #$1b ; escape
     beq .exit
 
-+   cmp #$9d ; left
+    ;cmp #$9d ; left
+    cmp #41 ; a
     beq .handle_left
 
-+   cmp #$1d ; right
+    ;cmp #$1d ; right
+    cmp #$44 ; d
     beq .handle_right
+
+    ;cmp #$1d ; up
+    cmp #$57 ; w
+    beq .handle_up
 
     ; Nothing
     rts
@@ -73,11 +78,11 @@
     lda #1
     jsr veraPutChar
 
-    ;dec scnCharX
+    dec scnCharX
     ;sta scnCharX
     ;lda #charBug
-    ;lda #2
-    ;jsr veraPutChar
+    lda #2
+    jsr veraPutChar
 +
     rts
 
@@ -94,6 +99,12 @@
     lda #charBug
     jsr veraPutChar
 +
+    rts
+
+.handle_up:
+    lda #0
+    jsr veraPutChar
+
     rts
 
 .exit

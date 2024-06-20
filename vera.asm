@@ -73,23 +73,21 @@ veraInit:
 ; Does not change the position
 ;******************************************************************************
 veraPutChar:
-    pha ; derp a derp, can't do debugging before saving this!
     pha
 
     sta EMU_debug_1
-    lda $30
+    lda scnCharX
     sta EMU_debug_1
-    lda $31
+    lda scnCharY
     sta EMU_debug_1
 
-    pla
     jsr .setPosAddr
     pla
 
     sta VERA_D0 ; output char to vera
 
     inc VERA_L
-    beq +
+    bne +
     inc VERA_M
 +
     lda scnColor
@@ -107,16 +105,16 @@ veraPutChar:
     sta VERA_H
 
     ; First we offset for number of full rows
-    lda scnCharY
-    beq +
--
-    lda #numCols
-    jsr veraIncAddr
-    lda #numCols
-    jsr veraIncAddr  ; Do it twice because 2 bytes per char
-    dey
-    bne -
-+
+;    lda scnCharY
+;    beq +
+;-
+;    lda #numCols
+;    jsr veraIncAddr
+;    lda #numCols
+;    jsr veraIncAddr  ; Do it twice because 2 bytes per char
+;    dey
+;    bne -
+;+
 
     ; Now the x for number of used columns
     lda scnCharX

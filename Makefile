@@ -11,7 +11,7 @@ PROGS		= acmehello.prg hello.prg mtest.prg
 all: $(PROGS)
 
 run-mtest: mtest.prg
-	$(X16EMU) -prg mtest.prg -scale 2 -run -debug 0878
+	$(X16EMU) -prg mtest.prg -scale 2 -run -debug 0837
 
 mtest.prg: mtest.asm variables.asm vera.asm
 # acmehello.prg: acmehello.asm

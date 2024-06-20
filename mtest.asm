@@ -19,16 +19,10 @@
 
     jsr veraInit
 
-    ; Show the bug
-    lda #charBug
-    jsr veraPutChar
 
-.mainloop:
-    jsr .handleKey
-    jmp .mainloop
 
 ; --------------------  Subroutines
-
+; TODO: Untaggle this better once it's working
 ; Zero page definitions before use to avoid "Using oversized addressing mode"
 ; error message
 
@@ -44,6 +38,40 @@
     !address EMU_debug_2 = $9fba
     !address EMU_debug_c = $9fbb
 
+.setup:
+    ; Show the bug
+    ;lda #charBug
+    ;jsr veraPutChar
+
+    jmp .mainloop
+
+.moresetup:
+    ; Forward three times
+    lda #$01
+    jsr veraPutChar
+    inc scnCharX
+
+    lda #$02
+    jsr veraPutChar
+    inc scnCharX
+
+    lda #$03
+    jsr veraPutChar
+    dec scnCharX
+
+
+    lda #$04
+    jsr veraPutChar
+    dec scnCharX
+
+    lda #$05
+    jsr veraPutChar
+    dec scnCharX
+
+.mainloop:
+    jsr .handleKey
+    jmp .mainloop
+
 .handleKey:
     jsr .getin
     cmp #$0
@@ -55,18 +83,39 @@
     beq .exit
 
     ;cmp #$9d ; left
-    cmp #41 ; a
-    beq .handle_left
+    cmp #$41 ; a
+    beq .handle_a
 
     ;cmp #$1d ; right
     cmp #$44 ; d
-    beq .handle_right
+    beq .handle_d
 
     ;cmp #$1d ; up
     cmp #$57 ; w
-    beq .handle_up
+    beq .handle_w
 
     ; Nothing
+    rts
+
+.handle_a:
+    lda #5
+    sta scnCharX
+    lda #1
+    jsr veraPutChar
+    rts
+
+.handle_w:
+    lda #15
+    sta scnCharX
+    lda #2
+    jsr veraPutChar
+    rts
+
+.handle_d:
+    lda #20
+    sta scnCharX
+    lda #3
+    jsr veraPutChar
     rts
 
 .handle_left:
@@ -75,13 +124,13 @@
 
     ; Clear current char
     ;lda #charSpace
-    lda #1
+    lda #$1
     jsr veraPutChar
 
     dec scnCharX
     ;sta scnCharX
     ;lda #charBug
-    lda #2
+    lda #$2
     jsr veraPutChar
 +
     rts
@@ -102,7 +151,7 @@
     rts
 
 .handle_up:
-    lda #0
+    lda #$0
     jsr veraPutChar
 
     rts

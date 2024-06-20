@@ -75,11 +75,18 @@ veraInit:
 veraPutChar:
     pha
 
+    pha
+    lda #$5b
+    sta EMU_debug_c
+    pla
+
     sta EMU_debug_1
     lda scnCharX
     sta EMU_debug_1
     lda scnCharY
     sta EMU_debug_1
+    lda #$5d
+    sta EMU_debug_c
 
     jsr .setPosAddr
     pla
@@ -120,6 +127,7 @@ veraPutChar:
     lda scnCharX
     jsr veraIncAddr
     lda scnCharX
+    sbc #$1 ; Minus one because indexing
     jsr veraIncAddr ; Twice because double bytes per char
 
     rts
@@ -129,12 +137,12 @@ veraIncAddr:
     ; .A contain increment so add address into it
     adc VERA_L
     sta VERA_L
-    sta EMU_debug_2
+;    sta EMU_debug_2
     bcc +
     ; Handle carry
     inc VERA_M
     lda VERA_M
-    sta EMU_debug_2
+;    sta EMU_debug_2
 +
     rts
 

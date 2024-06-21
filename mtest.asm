@@ -94,6 +94,10 @@
     cmp #$57 ; w
     beq .handle_w
 
+    ;cmp #$1d ; up
+    cmp #$53 ; s
+    beq .handle_s
+
     ; Nothing
     rts
 
@@ -103,6 +107,7 @@
     lda #0
     sta scnCharY
     lda #1
+    clc
     jsr veraPutChar
     rts
 
@@ -124,6 +129,16 @@
     jsr veraPutChar
     rts
 
+.handle_s:
+    lda #20
+    sta scnCharX
+    lda #1
+    sta scnCharY
+    lda message
+    clc
+    jsr veraPutChar
+    rts
+
 .handle_left:
     lda scnCharX
     beq +
@@ -131,6 +146,7 @@
     ; Clear current char
     ;lda #charSpace
     lda #$1
+    clc
     jsr veraPutChar
 
     dec scnCharX
@@ -162,7 +178,7 @@
 
     rts
 
-.exit
+.exit:
     ; Clear the screen by writing the clear screen code
     lda #$93
     jsr .chrout
@@ -213,7 +229,7 @@ exit:
 ;    bne loop
 
 
-.message
+message:
     !pet "hello world!"
     !byte 0
 

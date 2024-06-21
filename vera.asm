@@ -73,32 +73,38 @@ veraInit:
 ; Does not change the position
 ;******************************************************************************
 veraPutChar:
+    php
     pha
 
     ; Debug ---------
-    pha
-    lda #$0a
-    sta EMU_debug_c
-    lda #$5b
-    sta EMU_debug_c
-    pla
-
-    sta EMU_debug_1
-    lda scnCharX
-    sta EMU_debug_1
-    lda scnCharY
-    sta EMU_debug_1
-    lda #$5d
-    sta EMU_debug_c
-    lda #$0a
-    sta EMU_debug_c
+;    pha
+;    lda #$0a
+;    sta EMU_debug_c
+;    lda #$5b
+;    sta EMU_debug_c
+;    pla;
+;
+;    sta EMU_debug_1
+;    lda scnCharX
+;    sta EMU_debug_1
+;    lda scnCharY
+;    sta EMU_debug_1
+;    lda #$5d
+;    sta EMU_debug_c
+;    lda #$0a
+;    sta EMU_debug_c
     ; ---------- End Debug
 
 
     jsr .setPosAddr
     pla
+    plp
 
-
+    bcs +
+    ; Carry not set, translate to screen
+    tax
+    lda .table_asc_to_screen,x
++
     sta VERA_D0 ; output char to vera
 
     inc VERA_L
@@ -121,7 +127,7 @@ veraPutChar:
 
     ; Load X into low
     lda scnCharX
-    asl
+    asl             ; Account for double byte-ness in the row
     adc VERA_L
     sta VERA_L
 
@@ -130,56 +136,24 @@ veraPutChar:
     adc VERA_M
     sta VERA_M
 
-    sta EMU_debug_2
-    lda VERA_L
-    sta EMU_debug_2
-
     rts
 
-.setPosAddrOld:
-    ; TODO: Rewrite this to store a current address and then use vera incrementing
-    ; instead of 6502 adds even. But maybe not, because can increment M address
+.table_asc_to_screen:
+    !byte 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143
+    !byte 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159
+    !byte 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47
+    !byte 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63
+    !byte 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+    !byte 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+    !byte 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79
+    !byte 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95
+    !byte 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207
+    !byte 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223
+    !byte 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111
+    !byte 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127
+    !byte 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79
+    !byte 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95
+    !byte 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111
+    !byte 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 94
 
-    ; Always start at the base address
-    lda #0
-    sta VERA_L
-    lda #VERA_CBUF_M
-    sta VERA_M
-    lda #VERA_CBUF_H
-    sta VERA_H
-
-    ; First we offset for number of full rows
-    lda scnCharY
-    beq +
--
-    lda #numCols
-    jsr veraIncAddr
-    lda #numCols
-    jsr veraIncAddr  ; Do it twice because 2 bytes per char
-    dey
-    bne -
-+
-
-    ; Now the x for number of used columns
-    lda scnCharX
-    jsr veraIncAddr
-    lda scnCharX
-    sbc #$1 ; Minus one because indexing
-    jsr veraIncAddr ; Twice because double bytes per char
-
-    rts
-
-
-veraIncAddr:
-    ; .A contain increment so add address into it
-    adc VERA_L
-    sta VERA_L
-;    sta EMU_debug_2
-    bcc +
-    ; Handle carry
-    inc VERA_M
-    lda VERA_M
-;    sta EMU_debug_2
-+
-    rts
 

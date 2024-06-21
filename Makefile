@@ -12,7 +12,6 @@ all: $(PROGS)
 
 run-mtest: mtest.prg
 	$(X16EMU) -prg mtest.prg -scale 2 -run -debug
-
 mtest.prg: mtest.asm variables.asm vera.asm
 # acmehello.prg: acmehello.asm
 # 	$(ASSEMBLER6502) $(AS_FLAGS) --outfile acmehello.prg --format cbm -r acmehello.rpt acmehello.asm
